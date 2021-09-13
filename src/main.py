@@ -23,7 +23,7 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    if "!join" in message.content.startswith:
+    if "!join" in message.content:
         print("start processing")
         if message.author.voice is None:
             await message.channel.send("You aren't currently connected to a Voice Channel.")
