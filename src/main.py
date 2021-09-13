@@ -31,7 +31,7 @@ async def on_message(message):
             return
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
-        message.author.guild.voice_client.play(discord.FFmpegPCMAudio('./aaa.mp3'), after=lambda e: print('done', e))
+        message.author.guild.voice_client.play(discord.FFmpegPCMAudio('/home/ubuntu/python-rhythm-like/aaa.mp3'), after=lambda e: print('done', e))
 
     if message.content == "!leave":
         if message.guild.voice_client is None:
