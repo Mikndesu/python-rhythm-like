@@ -10,7 +10,7 @@ client = discord.Client()
 
 def youtube_dl(url):
     yt = pytube.YouTube(url)
-    stream = yt.streams.get_by_itag(22).download(None, "aaa.mp4")
+    stream = yt.streams.get_by_itag(251).download(None, "aaa.mp4")
 
 
 @client.event
