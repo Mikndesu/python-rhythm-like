@@ -24,6 +24,7 @@ async def on_message(message):
         return
 
     if message.content.startswith == "!join":
+        print("start processing")
         if message.author.voice is None:
             await message.channel.send("You aren't currently connected to a Voice Channel.")
             return
