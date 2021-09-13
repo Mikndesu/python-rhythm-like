@@ -31,9 +31,8 @@ async def on_message(message):
             return
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
-        voice_ch = await client.join_voice_channel(client.get_channel("Discord voice channel ID"))
-        player = voice_ch.create_ffmpeg_player("aaa.mp3")
-        player.start()
+        vc = await client.channel.connect()
+        vc.play(discord.FFmpegPCMAudio('aaa.mp3'), after=lambda e: print('done', e))
 
     if message.content == "!leave":
         if message.guild.voice_client is None:
