@@ -9,7 +9,8 @@ test_url="https://www.youtube.com/watch?v=WWB01IuMvzA"
 client = discord.Client()
 
 def youtube_dl(url):
-    youtube = pytube.YouTube(url).streams.first().download("aaa.mp4")
+    yt = pytube.YouTube(url)
+    stream = yt.streams.get_by_itag(251).download("aaa.mp3")
 
 
 @client.event
@@ -19,6 +20,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    youtube_dl(test_url)
+
     if message.author.bot:
         return
 
@@ -29,7 +32,6 @@ async def on_message(message):
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
         voice_ch = await client.join_voice_channel(client.get_channel("Discord voice channel ID"))
-        youtube_dl(test_url)
         player = voice_ch.create_ffmpeg_player("aaa.mp3")
         player.start()
 
