@@ -20,15 +20,15 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    youtube_dl(test_url)
-
     if message.author.bot:
         return
 
-    if message.content == "!join":
+    if message.content.startswith == "!join":
         if message.author.voice is None:
             await message.channel.send("You aren't currently connected to a Voice Channel.")
             return
+        videoId = message.content.replace("!join ")
+        youtube_dl(f"https://www.youtube.com/watch?v={videoId}")
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
         message.author.guild.voice_client.play(discord.FFmpegPCMAudio('/home/ubuntu/python-rhythm-like/aaa.webm'), after=lambda e: print('done', e))
