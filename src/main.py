@@ -10,7 +10,7 @@ client = discord.Client()
 
 def youtube_dl(url):
     yt = pytube.YouTube(url)
-    stream = yt.streams.get_by_itag(251).download("aaa.mp3")
+    stream = yt.streams.get_by_itag(251).download("aaa.webm")
 
 
 @client.event
@@ -31,7 +31,7 @@ async def on_message(message):
             return
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
-        message.author.guild.voice_client.play(discord.FFmpegPCMAudio('aaa.mp3'), after=lambda e: print('done', e))
+        message.author.guild.voice_client.play(discord.FFmpegPCMAudio('./aaa.mp3'), after=lambda e: print('done', e))
 
     if message.content == "!leave":
         if message.guild.voice_client is None:
