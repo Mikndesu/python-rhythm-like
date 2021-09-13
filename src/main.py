@@ -28,7 +28,7 @@ async def on_message(message):
         if message.author.voice is None:
             await message.channel.send("You aren't currently connected to a Voice Channel.")
             return
-        videoId = message.content.replace("!join ")
+        videoId = message.content.replace("!join ", "")
         youtube_dl(f"https://www.youtube.com/watch?v={videoId}")
         await message.author.voice.channel.connect()
         await message.channel.send("Connected.")
