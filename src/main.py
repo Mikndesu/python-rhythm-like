@@ -8,7 +8,6 @@ import os
 
 class Discord_bot:
 
-    TOKEN = os.getenv("TOKEN")
     YOUTUBE_APIKEY = os.getenv("YOUTUBE_APIKEY")
     isPlaying = False
     isJoined = False
@@ -113,6 +112,5 @@ class Discord_bot:
 
 
 if __name__ == "__main__":
-    bot = Discord_bot()
-    bot.client.run(bot.TOKEN)
-
+    TOKEN = os.getenv("TOKEN")
+    Discord_bot().client.run(TOKEN)
