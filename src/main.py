@@ -5,87 +5,114 @@ import requests
 import json
 import os
 
-TOKEN=os.getenv("TOKEN")
-YOUTUBE_APIKEY=os.getenv("YOUTUBE_APIKEY")
-test_url="https://www.youtube.com/watch?v=WWB01IuMvzA"
-isPlaying=False
 
-client = discord.Client()
+class Discord_bot:
 
-def youtube_dl(url, title):
-    yt = pytube.YouTube(url)
-    yt.streams.get_by_itag(251).download(None, f"{title}.webm")
+    TOKEN = os.getenv("TOKEN")
+    YOUTUBE_APIKEY = os.getenv("YOUTUBE_APIKEY")
+    isPlaying = False
+    isJoined = False
 
-
-def search(search_query):
-    result_amount = 5
-    api_response = requests.get(
-                    f"https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&maxResults={result_amount}&key={YOUTUBE_APIKEY}").text
-    jsonObj = json.loads(api_response)
-    title_and_id = ()
-    for i in jsonObj["items"]:
-        print(i["snippet"]["title"])
-        title_and_id = (i["snippet"]["title"], i["id"]["videoId"])
-        break
-    return title_and_id
+    client = discord.Client()
 
 
-@client.event
-async def on_ready():
-    print('Logged in.')
+    def youtube_dl(self, url, title):
+        yt = pytube.YouTube(url)
+        yt.streams.get_by_itag(251).download(None, f"{title}.webm")
 
 
-@client.event
-async def on_message(message):
-    if message.author.bot:
-        return
+    def search(self, search_query):
+        result_amount = 5
+        api_response = requests.get(
+            f"https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&maxResults={result_amount}&key={self.YOUTUBE_APIKEY}").text
+        jsonObj = json.loads(api_response)
+        title_and_id = ()
+        for i in jsonObj["items"]:
+            print(i["snippet"]["title"])
+            title_and_id = (i["snippet"]["title"], i["id"]["videoId"])
+            break
+        return title_and_id
 
-    if "!join" in message.content:
-        print("start processing")
-        if message.author.voice is None:
-            await message.channel.send("You aren't currently connected to a Voice Channel.")
+
+    @client.event
+    async def on_ready(self):
+        print('Logged in.')
+
+
+    @client.event
+    async def on_message(self, message):
+        if message.author.bot:
             return
-        title,id = search(message.content.replace("!join ", ""))
-        await message.channel.send(f"Currently Playing: {title}")
-        youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
-        await message.author.voice.channel.connect()
-        message.author.guild.voice_client.play(discord.FFmpegPCMAudio(f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+
+        if "!join" in message.content:
+            print("start processing")
+            if message.author.voice is None:
+                await message.channel.send("You aren't currently connected to a Voice Channel.")
+                return
+            title, id = self.search(message.content.replace("!join ", ""))
+            await message.channel.send(f"Currently Playing: {title}")
+            self.youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
+            await message.author.voice.channel.connect()
+            isJoined = True
+            message.author.guild.voice_client.play(discord.FFmpegPCMAudio(
+                f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+
+        if "!play" in message.content:
+            if isJoined is False:
+                message.channel.send(
+                    "You have to join any channels to execute this command")
+            print("start processing")
+            if message.author.voice is None:
+                await message.channel.send("You aren't currently connected to a Voice Channel.")
+                return
+            title, id = self.search(message.content.replace("!join ", ""))
+            await message.channel.send(f"Currently Playing: {title}")
+            self.youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
+            message.author.guild.voice_client.play(discord.FFmpegPCMAudio(
+                f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+
+        if message.content == "!stop":
+            if self.isJoined is False:
+                message.channel.send(
+                    "You have to join any channels to execute this command")
+            if self.isPlaying is False:
+                message.channel.send(
+                    "Music isn't now playing")
+            self.isPlaying=False
+            message.author.guild.voice_client.stop()
+
+        if message.content == "!pause":
+            if self.isJoined is False:
+                message.channel.send(
+                    "You have to join any channels to execute this command")
+            if self.isPlaying is False:
+                message.channel.send(
+                    "Music isn't now playing")
+            message.author.guild.voice_client.pause()
+
+        if message.content == "!resume":
+            if self.isJoined is False:
+                message.channel.send(
+                    "You have to join any channels to execute this command")
+            if self.isPlaying is False:
+                message.channel.send(
+                    "Music isn't now playing")
+            message.author.guild.voice_client.resume()
+
+        if message.content == "!leave":
+            if message.guild.voice_client is None:
+                await message.channel.send("Unconneted.")
+                return
+            await message.guild.voice_client.disconnect()
+            await message.channel.send("Disconnected.")
+
+        if message.content == "!clean":
+            file = glob.glob('*.webm')
+            for i in file:
+                os.remove(i)
 
 
-    if "!play" in message.content:
-        print("start processing")
-        if message.author.voice is None:
-            await message.channel.send("You aren't currently connected to a Voice Channel.")
-            return
-        title,id = search(message.content.replace("!join ", ""))
-        await message.channel.send(f"Currently Playing: {title}")
-        youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
-        message.author.guild.voice_client.play(discord.FFmpegPCMAudio(f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+if "__name__" == "__main__":
+    bot = Discord_bot()
+    bot.client.run(bot.TOKEN)
 
-    
-    if message.content == "!stop":
-        message.author.guild.voice_client.stop()
-
-    
-    if message.content == "!pause":
-        message.author.guild.voice_client.pause()
-
-    
-    if message.content == "!resume":
-        message.author.guild.voice_client.resume()
-
-
-    if message.content == "!leave":
-        if message.guild.voice_client is None:
-            await message.channel.send("Unconneted.")
-            return
-        await message.guild.voice_client.disconnect()
-        await message.channel.send("Disconnected.")
-
-    if message.content == "!clean":
-        file = glob.glob('*.webm')
-        for i in file:
-            os.remove(i)
-
-
-client.run(TOKEN)
