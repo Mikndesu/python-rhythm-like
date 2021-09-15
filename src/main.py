@@ -1,5 +1,6 @@
 import discord
 import pytube
+import glob
 import requests
 import json
 import os
@@ -10,9 +11,9 @@ test_url="https://www.youtube.com/watch?v=WWB01IuMvzA"
 
 client = discord.Client()
 
-def youtube_dl(url):
+def youtube_dl(url, title):
     yt = pytube.YouTube(url)
-    stream = yt.streams.get_by_itag(251).download(None, "aaa.webm")
+    stream = yt.streams.get_by_itag(251).download(None, f"{title}.webm")
 
 
 def search(search_query):
@@ -43,9 +44,9 @@ async def on_message(message):
         if message.author.voice is None:
             await message.channel.send("You aren't currently connected to a Voice Channel.")
             return
-        title_and_id = search(message.content.replace("!join ", ""))
-        await message.channel.send(f"Currently Playing: {title_and_id[0]}")
-        youtube_dl(f"https://www.youtube.com/watch?v={title_and_id[1]}")
+        title,id = search(message.content.replace("!join ", ""))
+        await message.channel.send(f"Currently Playing: {title}")
+        youtube_dl(f"https://www.youtube.com/watch?v={id}")
         await message.author.voice.channel.connect()
         message.author.guild.voice_client.play(discord.FFmpegPCMAudio('/home/ubuntu/python-rhythm-like/aaa.webm'), after=lambda e: print('done', e))
 
@@ -55,5 +56,11 @@ async def on_message(message):
             return
         await message.guild.voice_client.disconnect()
         await message.channel.send("Disconnected.")
+
+    if message.content == "!clean":
+        file = glob.glob('*.webm')
+        for i in file:
+            os.remove(i)
+
 
 client.run(TOKEN)
