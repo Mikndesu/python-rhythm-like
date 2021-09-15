@@ -46,7 +46,7 @@ async def on_message(message):
             return
         title,id = search(message.content.replace("!join ", ""))
         await message.channel.send(f"Currently Playing: {title}")
-        youtube_dl(f"https://www.youtube.com/watch?v={id}")
+        youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
         await message.author.voice.channel.connect()
         message.author.guild.voice_client.play(discord.FFmpegPCMAudio('/home/ubuntu/python-rhythm-like/aaa.webm'), after=lambda e: print('done', e))
 
