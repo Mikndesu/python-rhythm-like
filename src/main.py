@@ -48,7 +48,7 @@ async def on_message(message):
         await message.channel.send(f"Currently Playing: {title}")
         youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
         await message.author.voice.channel.connect()
-        message.author.guild.voice_client.play(discord.FFmpegPCMAudio('/home/ubuntu/python-rhythm-like/aaa.webm'), after=lambda e: print('done', e))
+        message.author.guild.voice_client.play(discord.FFmpegPCMAudio(f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
 
     if message.content == "!leave":
         if message.guild.voice_client is None:
