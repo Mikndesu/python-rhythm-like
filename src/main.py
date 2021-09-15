@@ -112,7 +112,7 @@ class Discord_bot:
                 os.remove(i)
 
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     bot = Discord_bot()
     bot.client.run(bot.TOKEN)
 
