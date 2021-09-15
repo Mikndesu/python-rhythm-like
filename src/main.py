@@ -8,12 +8,13 @@ import os
 TOKEN=os.getenv("TOKEN")
 YOUTUBE_APIKEY=os.getenv("YOUTUBE_APIKEY")
 test_url="https://www.youtube.com/watch?v=WWB01IuMvzA"
+isPlaying=False
 
 client = discord.Client()
 
 def youtube_dl(url, title):
     yt = pytube.YouTube(url)
-    stream = yt.streams.get_by_itag(251).download(None, f"{title}.webm")
+    yt.streams.get_by_itag(251).download(None, f"{title}.webm")
 
 
 def search(search_query):
@@ -49,6 +50,30 @@ async def on_message(message):
         youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
         await message.author.voice.channel.connect()
         message.author.guild.voice_client.play(discord.FFmpegPCMAudio(f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+
+
+    if "!play" in message.content:
+        print("start processing")
+        if message.author.voice is None:
+            await message.channel.send("You aren't currently connected to a Voice Channel.")
+            return
+        title,id = search(message.content.replace("!join ", ""))
+        await message.channel.send(f"Currently Playing: {title}")
+        youtube_dl(f"https://www.youtube.com/watch?v={id}", title)
+        message.author.guild.voice_client.play(discord.FFmpegPCMAudio(f"/home/ubuntu/python-rhythm-like/{title}.webm"), after=lambda e: print('done', e))
+
+    
+    if message.content == "!stop":
+        message.author.guild.voice_client.stop()
+
+    
+    if message.content == "!pause":
+        message.author.guild.voice_client.pause()
+
+    
+    if message.content == "!resume":
+        message.author.guild.voice_client.resume()
+
 
     if message.content == "!leave":
         if message.guild.voice_client is None:
