@@ -7,7 +7,7 @@ import os
 import glob
 import time
 
-current_path = "/home/VSCodeProjects/python-rhythm-like"
+current_path = "/home/ubuntu/python-rhythm-like/"
 # "/home/ubuntu/python-rhythm-like/"
 
 
